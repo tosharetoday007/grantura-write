@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Grantura Write — Reference Manager & Manuscript Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --teal:   #1D9E75;
+  --teal-l: #E1F5EE;
+  --teal-m: #5DCAA5;
+  --teal-d: #085041;
+  --amber:  #EF9F27;
+  --amber-l:#FAEEDA;
+  --amber-d:#633806;
+  --red-l:  #FCEBEB;
+  --red:    #E24B4A;
+  --bg:     #F7F6F2;
+  --surface:#FFFFFF;
+  --border: rgba(0,0,0,0.10);
+  --border2:rgba(0,0,0,0.18);
+  --text:   #1a1a18;
+  --muted:  #6b6b66;
+  --hint:   #a0a09a;
+  --serif:  'DM Serif Display', Georgia, serif;
+  --sans:   'DM Sans', system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;min-height:100vh;display:flex;flex-direction:column}
+
+/* ── TOP NAV ── */
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;background:var(--surface);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{width:28px;height:28px;background:var(--teal);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.nav-logo svg{width:16px;height:16px;fill:white}
+.nav-title{font-family:var(--serif);font-size:17px;color:var(--text)}
+.nav-sub{font-size:11px;color:var(--muted);margin-left:4px;font-weight:300}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{padding:6px 14px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--sans)}
+.nav-tab:hover{background:var(--bg)}
+.nav-tab.active{background:var(--teal-l);color:var(--teal-d);font-weight:500}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.btn{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--sans);font-weight:500;border:0.5px solid var(--border2);background:var(--surface);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--teal);color:white;border-color:var(--teal)}
+.btn-primary:hover{background:var(--teal-d)}
+
+/* ── LAYOUT ── */
+.app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 48px)}
+
+/* ── LEFT SIDEBAR: Reference Manager ── */
+.ref-sidebar{width:290px;flex-shrink:0;background:var(--surface);border-right:0.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-header{padding:14px 16px 10px;border-bottom:0.5px solid var(--border)}
+.sidebar-header h2{font-family:var(--serif);font-size:15px;margin-bottom:8px}
+.search-box{display:flex;align-items:center;gap:6px;background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:5px 10px}
+.search-box input{border:none;background:none;outline:none;font-size:12px;flex:1;font-family:var(--sans);color:var(--text)}
+.search-box input::placeholder{color:var(--hint)}
+.sidebar-actions{display:flex;gap:6px;padding:10px 16px;border-bottom:0.5px solid var(--border)}
+.sidebar-actions .btn{flex:1;font-size:11px;padding:5px 8px;text-align:center}
+.ref-list{flex:1;overflow-y:auto;padding:8px}
+.ref-item{padding:10px 12px;border-radius:8px;cursor:pointer;border:0.5px solid transparent;margin-bottom:4px;transition:all .15s;position:relative}
+.ref-item:hover{background:var(--bg);border-color:var(--border)}
+.ref-item.selected{background:var(--teal-l);border-color:var(--teal-m)}
+.ref-item.flagged{border-color:var(--amber)}
+.ref-num{font-size:10px;font-weight:500;color:var(--teal-d);margin-bottom:2px}
+.ref-item.flagged .ref-num{color:var(--amber-d)}
+.ref-t{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:2px}
+.ref-m{font-size:11px;color:var(--muted)}
+.ref-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;margin-top:4px;font-weight:500}
+.ref-badge.ok{background:var(--teal-l);color:var(--teal-d)}
+.ref-badge.weak{background:var(--amber-l);color:var(--amber-d)}
+.ref-controls{display:flex;gap:4px;margin-top:6px}
+.ref-controls .btn{font-size:10px;padding:3px 7px}
+
+/* ── MAIN EDITOR ── */
+.editor-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.editor-toolbar{display:flex;align-items:center;gap:4px;padding:8px 16px;border-bottom:0.5px solid var(--border);background:var(--surface);flex-wrap:wrap}
+.tb-group{display:flex;gap:2px}
+.tb-btn{padding:5px 9px;border-radius:5px;border:0.5px solid transparent;background:none;cursor:pointer;font-size:12px;color:var(--muted);font-family:var(--sans);transition:all .15s}
+.tb-btn:hover{background:var(--bg);color:var(--text);border-color:var(--border)}
+.tb-btn.on{background:var(--teal-l);color:var(--teal-d);border-color:var(--teal-m)}
+.tb-sep{width:0.5px;height:20px;background:var(--border);margin:0 4px;align-self:center}
+.editor-scroll{flex:1;overflow-y:auto;padding:32px 48px;background:var(--bg)}
+.doc-card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:40px 48px;max-width:720px;margin:0 auto}
+.doc-title-input{font-family:var(--serif);font-size:22px;border:none;outline:none;width:100%;background:none;color:var(--text);margin-bottom:6px;line-height:1.3}
+.doc-meta{font-size:12px;color:var(--hint);margin-bottom:28px;padding-bottom:16px;border-bottom:0.5px solid var(--border)}
+.section-head{font-size:11px;font-weight:500;color:var(--hint);letter-spacing:.08em;text-transform:uppercase;margin:22px 0 8px}
+.para{font-size:14px;line-height:1.9;color:var(--text);margin-bottom:10px;outline:none;padding:4px 6px;border-radius:5px;border:0.5px solid transparent;transition:border-color .15s;font-family:var(--sans)}
+.para:focus{border-color:var(--border);background:#fafaf8}
+.cite{display:inline-block;background:var(--teal-l);color:var(--teal-d);border-radius:3px;font-size:11px;font-weight:500;padding:1px 5px;margin:0 1px;cursor:pointer;border:0.5px solid var(--teal-m);transition:background .15s;white-space:nowrap;position:relative}
+.cite:hover{background:var(--teal-m);color:white}
+.cite.weak{background:var(--amber-l);color:var(--amber-d);border-color:var(--amber)}
+.cite.weak:hover{background:var(--amber);color:white}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;border-top:0.5px solid var(--border);background:var(--surface);font-size:11px;color:var(--muted);flex-shrink:0}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.pill.ok{background:var(--teal-l);color:var(--teal-d)}
+.pill.warn{background:var(--amber-l);color:var(--amber-d)}
+
+/* ── RIGHT PANEL: Notes / Details ── */
+.right-panel{width:240px;flex-shrink:0;background:var(--surface);border-left:0.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.rp-tabs{display:flex;border-bottom:0.5px solid var(--border)}
+.rp-tab{flex:1;padding:10px;font-size:12px;text-align:center;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);transition:all .15s}
+.rp-tab.active{color:var(--teal-d);border-bottom-color:var(--teal)}
+.rp-body{flex:1;overflow-y:auto;padding:14px}
+.rp-section{margin-bottom:16px}
+.rp-label{font-size:10px;font-weight:500;color:var(--hint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.rp-val{font-size:12px;color:var(--text);line-height:1.6}
+.rp-textarea{width:100%;border:0.5px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:var(--sans);color:var(--text);background:var(--bg);resize:none;outline:none;line-height:1.6}
+.rp-textarea:focus{border-color:var(--teal-m)}
+.flag-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.flag-dot.ok{background:var(--teal)}
+.flag-dot.warn{background:var(--amber)}
+
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border-radius:12px;border:0.5px solid var(--border);padding:24px;width:460px;max-width:95vw}
+.modal h3{font-family:var(--serif);font-size:17px;margin-bottom:16px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;border:0.5px solid var(--border2);border-radius:6px;padding:7px 10px;font-size:13px;font-family:var(--sans);color:var(--text);background:var(--surface);outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--teal-d);color:white;padding:10px 18px;border-radius:8px;font-size:13px;z-index:200;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* ── GENERATE TAB ── */
+.gen-panel{padding:24px;max-width:560px;margin:0 auto}
+.gen-panel h2{font-family:var(--serif);font-size:20px;margin-bottom:6px}
+.gen-panel p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.gen-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.gen-refs{background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px;max-height:180px;overflow-y:auto}
+.gen-ref-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border);font-size:12px}
+.gen-ref-item:last-child{border-bottom:none}
+.gen-ref-item input[type=checkbox]{accent-color:var(--teal);width:14px;height:14px}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;margin:16px 0;overflow:hidden;display:none}
+.progress-fill{height:100%;background:var(--teal);border-radius:2px;width:0;transition:width .4s}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">
+      <svg viewBox="0 0 16 16"><path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm1 3v1h8V5H4zm0 3v1h8V8H4zm0 3v1h5v-1H4z"/></svg>
+    </div>
+    <span class="nav-title">Grantura</span>
+    <span class="nav-sub">Write</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('refs')">References</button>
+    <button class="nav-tab" onclick="switchTab('editor')">Manuscript editor</button>
+    <button class="nav-tab" onclick="switchTab('generate')">Generate</button>
+  </div>
+  <div class="nav-actions">
+    <button class="btn" onclick="openModal('add-modal')">+ Add reference</button>
+    <button class="btn btn-primary" onclick="showToast('Downloading manuscript...');setTimeout(()=>showToast('manuscript-draft.docx saved!'),1200)">Export .docx</button>
+  </div>
+</nav>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- LEFT: Reference sidebar (always visible) -->
+  <div class="ref-sidebar" id="ref-sidebar">
+    <div class="sidebar-header">
+      <h2>Reference library</h2>
+      <div class="search-box">
+        <svg width="12" height="12" fill="none" stroke="var(--hint)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search references..." oninput="filterRefs(this.value)" id="ref-search"/>
+      </div>
+    </div>
+    <div class="sidebar-actions">
+      <button class="btn" onclick="openModal('add-modal')">+ Add</button>
+      <button class="btn" onclick="openModal('import-modal')">Import XML/BibTeX</button>
+      <button class="btn" onclick="exportXML()">Export XML</button>
+    </div>
+    <div class="ref-list" id="ref-list"></div>
+  </div>
+
+  <!-- CENTRE: Tabs content -->
+  <div class="editor-area">
+
+    <!-- REFS TAB INFO PANEL -->
+    <div id="tab-refs" style="flex:1;overflow-y:auto;padding:32px 40px;display:block">
+      <div style="max-width:600px;margin:0 auto">
+        <h2 style="font-family:var(--serif);font-size:22px;margin-bottom:8px">Your reference library</h2>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px">Browse a paper on any journal website, PubMed, Google Scholar, or arXiv — then click the Grantura extension icon to capture it instantly. You can also add references manually or import an existing BibTeX / XML file.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:28px">
+          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:16px">
+            <div style="font-size:24px;font-weight:500;color:var(--teal);font-family:var(--serif)" id="stat-total">6</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Total references</div>
+          </div>
+          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:16px">
+            <div style="font-size:24px;font-weight:500;color:var(--amber-d);font-family:var(--serif)" id="stat-flagged">1</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Flagged (weak)</div>
+          </div>
+          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:16px">
+            <div style="font-size:24px;font-weight:500;color:var(--teal);font-family:var(--serif)" id="stat-used">6</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Used in manuscript</div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--muted)">Select a reference on the left to view details, add notes, or flag it. When you are ready, go to <strong>Generate</strong> to produce your manuscript.</p>
+      </div>
+    </div>
+
+    <!-- EDITOR TAB -->
+    <div id="tab-editor" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+      <div class="editor-toolbar">
+        <div class="tb-group">
+          <button class="tb-btn" onclick="fmt('bold')"><b>B</b></button>
+          <button class="tb-btn" onclick="fmt('italic')"><i>I</i></button>
+          <button class="tb-btn" onclick="fmt('underline')"><u>U</u></button>
+        </div>
+        <div class="tb-sep"></div>
+        <div class="tb-group">
+          <button class="tb-btn" onclick="insertHeading()">H2</button>
+          <button class="tb-btn" onclick="fmt('insertUnorderedList')">List</button>
+        </div>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="flagSelectedCite()">Flag weak citation</button>
+        <button class="tb-btn" onclick="showToast('Spell-check coming soon!')">Spell-check</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="showToast('Citation style changed to APA')">APA</button>
+        <button class="tb-btn on">Vancouver</button>
+        <button class="tb-btn" onclick="showToast('Citation style changed to Harvard')">Harvard</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="showToast('Downloading manuscript...');setTimeout(()=>showToast('manuscript-draft.docx saved!'),1200)">Export .docx</button>
+        <button class="tb-btn" onclick="exportXML()">Export XML refs</button>
+        <button class="tb-btn" onclick="showToast('Downloading PDF...');setTimeout(()=>showToast('manuscript-draft.pdf saved!'),1200)">Export PDF</button>
+      </div>
+      <div class="editor-scroll">
+        <div class="doc-card">
+          <input class="doc-title-input" id="doc-title" value="Metabolic adaptation in type 2 diabetes: a systematic review"/>
+          <div class="doc-meta">Draft · Vancouver citation style · Auto-saved · 6 references used</div>
+
+          <div class="section-head">Abstract</div>
+          <div class="para" contenteditable="true">Type 2 diabetes mellitus is a major global health challenge, characterised by insulin resistance and progressive beta-cell dysfunction. This systematic review synthesises evidence on metabolic adaptation following dietary and lifestyle interventions, drawing on six key references identified through structured literature search.</div>
+
+          <div class="section-head">Introduction</div>
+          <div class="para" contenteditable="true">Type 2 diabetes mellitus represents a growing global health burden, affecting over 500 million individuals worldwide <span class="cite" onclick="highlightRef(0)" data-ref="0">[1]</span>. The disease is characterised by progressive insulin resistance and beta-cell dysfunction, leading to chronic hyperglycaemia <span class="cite" onclick="highlightRef(1)" data-ref="1">[2]</span>. Understanding the mechanisms of metabolic adaptation is essential for developing effective interventions.</div>
+
+          <div class="section-head">Methods</div>
+          <div class="para" contenteditable="true">A systematic search was conducted across PubMed, Scopus, and Web of Science for studies published between 2010 and 2024, following PRISMA 2020 guidelines <span class="cite" onclick="highlightRef(2)" data-ref="2">[3]</span>. Eligible studies included randomised controlled trials and cohort studies examining metabolic adaptation in adults with confirmed type 2 diabetes.</div>
+
+          <div class="section-head">Results</div>
+          <div class="para" contenteditable="true">Caloric restriction significantly improved glycaemic control in 78% of included studies <span class="cite" onclick="highlightRef(3)" data-ref="3">[4]</span>. Mitochondrial biogenesis was identified as a potential mediator of metabolic recovery, though evidence remains limited <span class="cite weak" onclick="highlightRef(4)" data-ref="4">[5]</span>.</div>
+
+          <div class="section-head">Discussion</div>
+          <div class="para" contenteditable="true">These findings support the hypothesis that dietary intervention can partially reverse metabolic dysfunction in type 2 diabetes <span class="cite" onclick="highlightRef(3)" data-ref="3">[4]</span>. Further longitudinal studies are required to establish causality and long-term outcomes <span class="cite" onclick="highlightRef(5)" data-ref="5">[6]</span>.</div>
+
+          <div class="section-head">References</div>
+          <div id="ref-list-doc" style="font-size:13px;line-height:2;color:var(--muted)"></div>
+        </div>
+      </div>
+      <div class="status-bar">
+        <span id="word-count">~ 180 words · 6 citations · <span class="pill warn" id="flag-pill">1 flagged</span></span>
+        <span style="display:flex;gap:8px;align-items:center">
+          <span class="pill ok">Auto-saved</span>
+          <span>Vancouver · .docx ready</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- GENERATE TAB -->
+    <div id="tab-generate" style="display:none;flex:1;overflow-y:auto">
+      <div class="gen-panel">
+        <h2>Generate manuscript</h2>
+        <p>Grantura Write reads your selected references and produces a manuscript where every scientific sentence is grounded in a real paper you have chosen. No hallucination — only what your references support.</p>
+        <div class="gen-row">
+          <div class="field">
+            <label>Manuscript type</label>
+            <select>
+              <option>Systematic review</option>
+              <option>Original research</option>
+              <option>Case report</option>
+              <option>Grant proposal</option>
+              <option>Literature review</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Citation style</label>
+            <select>
+              <option>Vancouver</option>
+              <option>APA 7th</option>
+              <option>Harvard</option>
+              <option>AMA</option>
+              <option>MLA</option>
+            </select>
+          </div>
+        </div>
+        <div class="gen-row">
+          <div class="field">
+            <label>Target journal / field</label>
+            <input type="text" placeholder="e.g. The Lancet, Diabetes Care…"/>
+          </div>
+          <div class="field">
+            <label>AI model</label>
+            <select>
+              <option>Groq (Llama 3)</option>
+              <option>Google Gemini</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Manuscript topic / research question</label>
+          <textarea rows="2" style="width:100%;border:0.5px solid var(--border2);border-radius:6px;padding:8px 10px;font-size:13px;font-family:var(--sans);resize:none;outline:none;color:var(--text)" placeholder="e.g. Metabolic adaptation following dietary intervention in type 2 diabetes…"></textarea>
+        </div>
+        <div class="field" style="margin-bottom:6px"><label>Select references to include</label></div>
+        <div class="gen-refs" id="gen-refs"></div>
+        <div class="field">
+          <label>Sections to generate</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="section-checks"></div>
+        </div>
+        <div class="progress-bar" id="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <button class="btn btn-primary" style="width:100%;padding:10px;font-size:13px" onclick="runGenerate()">Generate manuscript with my references</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Notes / details panel (editor tab only) -->
+  <div class="right-panel" id="right-panel" style="display:none">
+    <div class="rp-tabs">
+      <button class="rp-tab active" onclick="rpTab('details')">Details</button>
+      <button class="rp-tab" onclick="rpTab('notes')">My notes</button>
+    </div>
+    <div class="rp-body" id="rp-body">
+      <p style="font-size:12px;color:var(--muted);margin-top:8px">Click a citation in the manuscript to view reference details here.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ADD REFERENCE MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h3>Add reference</h3>
+    <div class="field">
+      <label>DOI (auto-fill)</label>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="doi-input" placeholder="e.g. 10.1016/S0140-6736(17)33102-1" style="flex:1"/>
+        <button class="btn btn-primary" onclick="doiLookup()">Fetch</button>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--hint);margin:4px 0">— or enter manually —</div>
+    <div class="field"><label>Title</label><input type="text" id="m-title" placeholder="Paper title"/></div>
+    <div class="gen-row" style="margin-bottom:0">
+      <div class="field"><label>Authors</label><input type="text" id="m-authors" placeholder="Smith J, Jones A"/></div>
+      <div class="field"><label>Year</label><input type="text" id="m-year" placeholder="2024"/></div>
+    </div>
+    <div class="gen-row" style="margin-bottom:0">
+      <div class="field"><label>Journal</label><input type="text" id="m-journal" placeholder="The Lancet"/></div>
+      <div class="field"><label>Volume / Issue</label><input type="text" id="m-vol" placeholder="401(2)"/></div>
+    </div>
+    <div class="field"><label>Pages</label><input type="text" id="m-pages" placeholder="123–130"/></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('add-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addReference()">Add to library</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <h3>Import reference list</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">Import your existing library from Zotero, Mendeley, or any reference manager. Supported formats: BibTeX (.bib), RIS (.ris), Zotero XML (.xml).</p>
+    <div class="field">
+      <label>Upload file</label>
+      <input type="file" accept=".bib,.ris,.xml" onchange="handleImport(this)"/>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--hint);margin:8px 0">— or paste BibTeX / RIS directly —</div>
+    <div class="field">
+      <textarea class="rp-textarea" rows="5" placeholder="@article{lean2018,&#10;  title={Primary care-led weight management...},&#10;  author={Lean, Michael EJ and others},&#10;  journal={The Lancet},&#10;  year={2018}&#10;}"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('import-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('import-modal');showToast('3 references imported successfully!')">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const refs = [
+  {num:1,title:"IDF Diabetes Atlas, 10th edition",authors:"International Diabetes Federation",journal:"IDF",year:"2021",doi:"",flagged:false,note:"",used:true},
+  {num:2,title:"Pathogenesis of type 2 diabetes mellitus",authors:"DeFronzo RA et al.",journal:"Medical Clinics of North America",year:"2009",doi:"10.1016/j.mcna.2009.02.010",flagged:false,note:"Key mechanistic paper",used:true},
+  {num:3,title:"PRISMA 2020 statement for systematic reviews",authors:"Moher D et al.",journal:"BMJ",year:"2020",doi:"10.1136/bmj.n71",flagged:false,note:"",used:true},
+  {num:4,title:"Primary care-led weight management for remission of type 2 diabetes",authors:"Lean MEJ et al.",journal:"The Lancet",year:"2018",doi:"10.1016/S0140-6736(17)33102-1",flagged:false,note:"Strong RCT — use prominently",used:true},
+  {num:5,title:"Mitochondrial biogenesis in metabolic disease",authors:"Jornayvaz FR, Shulman GI",journal:"Essays in Biochemistry",year:"2010",doi:"10.1042/bse0470069",flagged:true,note:"Weak — only indirect evidence. Find 2020+ replacement.",used:true},
+  {num:6,title:"Remission of type 2 diabetes: mechanisms and management",authors:"Taylor R et al.",journal:"Cell Metabolism",year:"2021",doi:"10.1016/j.cmet.2021.01.016",flagged:false,note:"",used:true},
+];
+
+let selectedRef = null;
+let activeRpTab = 'details';
+
+function renderRefList(filter=''){
+  const list = document.getElementById('ref-list');
+  list.innerHTML='';
+  refs.forEach((r,i)=>{
+    if(filter && !r.title.toLowerCase().includes(filter.toLowerCase()) && !r.authors.toLowerCase().includes(filter.toLowerCase())) return;
+    const d=document.createElement('div');
+    d.className='ref-item'+(r.flagged?' flagged':'')+(selectedRef===i?' selected':'');
+    d.onclick=()=>selectRef(i);
+    d.innerHTML=`<div class="ref-num">[${r.num}]${r.flagged?' ⚠':''}</div>
+      <div class="ref-t">${r.title}</div>
+      <div class="ref-m">${r.authors} · ${r.journal} · ${r.year}</div>
+      <div style="margin-top:5px;display:flex;gap:4px;flex-wrap:wrap">
+        <span class="ref-badge ${r.flagged?'weak':'ok'}">${r.flagged?'Weak citation':'Good'}</span>
+        ${r.doi?`<span class="ref-badge ok">DOI</span>`:''}
+        ${r.note?`<span class="ref-badge ok">Has note</span>`:''}
+      </div>`;
+    list.appendChild(d);
+  });
+  updateStats();
+}
+
+function selectRef(i){
+  selectedRef=i;
+  renderRefList(document.getElementById('ref-search').value);
+  renderRpBody();
+  document.querySelectorAll('.cite').forEach(c=>{
+    if(parseInt(c.dataset.ref)===i) c.style.outline='2px solid var(--teal)';
+    else c.style.outline='';
+  });
+}
+
+function highlightRef(i){
+  selectRef(i);
+  if(document.getElementById('tab-editor').style.display!=='none'){
+    document.getElementById('right-panel').style.display='flex';
+    document.getElementById('right-panel').style.flexDirection='column';
+  }
+}
+
+function renderRpBody(){
+  if(selectedRef===null) return;
+  const r=refs[selectedRef];
+  const body=document.getElementById('rp-body');
+  if(activeRpTab==='details'){
+    body.innerHTML=`
+      <div class="rp-section"><div class="rp-label">Title</div><div class="rp-val">${r.title}</div></div>
+      <div class="rp-section"><div class="rp-label">Authors</div><div class="rp-val">${r.authors}</div></div>
+      <div class="rp-section"><div class="rp-label">Journal</div><div class="rp-val">${r.journal}</div></div>
+      <div class="rp-section"><div class="rp-label">Year</div><div class="rp-val">${r.year}</div></div>
+      ${r.doi?`<div class="rp-section"><div class="rp-label">DOI</div><div class="rp-val" style="color:var(--teal);word-break:break-all">${r.doi}</div></div>`:''}
+      <div class="rp-section">
+        <div class="rp-label">Citation strength</div>
+        <div><span class="flag-dot ${r.flagged?'warn':'ok'}"></span><span class="rp-val" style="display:inline">${r.flagged?'Flagged — weak or limited evidence':'Good — well-supported'}</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn" style="font-size:11px;padding:4px 8px" onclick="toggleFlag(${selectedRef})">${r.flagged?'Remove flag':'Flag as weak'}</button>
+        <button class="btn" style="font-size:11px;padding:4px 8px" onclick="removeRef(${selectedRef})">Remove</button>
+      </div>`;
+  } else {
+    body.innerHTML=`
+      <div class="rp-section"><div class="rp-label">Private note for [${r.num}]</div>
+      <textarea class="rp-textarea" rows="6" placeholder="Add your notes about this paper…" onchange="refs[${selectedRef}].note=this.value;renderRefList()">${r.note}</textarea>
+      <div style="font-size:10px;color:var(--hint);margin-top:4px">Notes are private and never exported.</div></div>`;
+  }
+}
+
+function rpTab(t){
+  activeRpTab=t;
+  document.querySelectorAll('.rp-tab').forEach((b,i)=>b.classList.toggle('active',['details','notes'][i]===t));
+  renderRpBody();
+}
+
+function toggleFlag(i){
+  refs[i].flagged=!refs[i].flagged;
+  document.querySelectorAll('.cite').forEach(c=>{
+    if(parseInt(c.dataset.ref)===i) c.classList.toggle('weak',refs[i].flagged);
+  });
+  renderRefList(document.getElementById('ref-search').value);
+  renderRpBody();
+  updateStats();
+  showToast(refs[i].flagged?'Citation flagged as weak':'Flag removed');
+}
+
+function removeRef(i){
+  refs.splice(i,1);
+  refs.forEach((r,j)=>r.num=j+1);
+  selectedRef=null;
+  renderRefList();
+  renderRefDoc();
+  updateStats();
+  showToast('Reference removed');
+}
+
+function filterRefs(v){ renderRefList(v); }
+
+function updateStats(){
+  const flagged=refs.filter(r=>r.flagged).length;
+  document.getElementById('stat-total').textContent=refs.length;
+  document.getElementById('stat-flagged').textContent=flagged;
+  document.getElementById('stat-used').textContent=refs.filter(r=>r.used).length;
+  const fp=document.getElementById('flag-pill');
+  if(fp){ fp.textContent=flagged+' flagged'; fp.className='pill '+(flagged>0?'warn':'ok'); }
+}
+
+function renderRefDoc(){
+  const el=document.getElementById('ref-list-doc');
+  if(!el) return;
+  el.innerHTML=refs.map(r=>`<div style="margin-bottom:4px">${r.num}. ${r.authors}. ${r.title}. <em>${r.journal}</em>. ${r.year}.${r.doi?' doi:'+r.doi:''}</div>`).join('');
+}
+
+function flagSelectedCite(){
+  const sel=window.getSelection();
+  if(!sel||sel.rangeCount===0){showToast('Click a citation tag first, then flag');return;}
+  const node=sel.anchorNode;
+  const cite=node?.parentElement?.closest?.('.cite')||node?.closest?.('.cite');
+  if(cite){const i=parseInt(cite.dataset.ref);if(!isNaN(i))toggleFlag(i);}
+  else showToast('Click a citation [n] tag first');
+}
+
+function fmt(cmd){ document.execCommand(cmd,false,null); }
+function insertHeading(){ document.execCommand('formatBlock',false,'h3'); }
+
+function switchTab(t){
+  ['refs','editor','generate'].forEach(id=>{
+    const el=document.getElementById('tab-'+id);
+    if(el) el.style.display='none';
+  });
+  document.getElementById('tab-'+t).style.display=(t==='editor')?'flex':'block';
+  document.querySelectorAll('.nav-tab').forEach((b,i)=>b.classList.toggle('active',['refs','editor','generate'][i]===t));
+  const rp=document.getElementById('right-panel');
+  rp.style.display=t==='editor'?'flex':'none';
+  if(t==='editor'){rp.style.flexDirection='column';}
+  if(t==='generate') renderGenRefs();
+  if(t==='editor') renderRefDoc();
+}
+
+function renderGenRefs(){
+  const el=document.getElementById('gen-refs');
+  if(!el) return;
+  el.innerHTML=refs.map((r,i)=>`<div class="gen-ref-item"><input type="checkbox" checked id="gr${i}"/><label for="gr${i}" style="cursor:pointer">[${r.num}] ${r.authors} (${r.year}) — ${r.title.substring(0,55)}…</label></div>`).join('');
+  const sc=document.getElementById('section-checks');
+  if(sc){
+    ['Abstract','Introduction','Methods','Results','Discussion','Conclusion'].forEach(s=>{
+      const span=document.createElement('label');
+      span.style.cssText='display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer';
+      span.innerHTML=`<input type="checkbox" checked style="accent-color:var(--teal)"/> ${s}`;
+      sc.appendChild(span);
+    });
+  }
+}
+
+function runGenerate(){
+  const pb=document.getElementById('progress-bar');
+  const pf=document.getElementById('progress-fill');
+  pb.style.display='block'; pf.style.width='0';
+  const steps=[10,30,55,75,90,100];
+  const msgs=['Reading references…','Extracting key findings…','Structuring manuscript…','Writing introduction…','Writing results & discussion…','Finalising citations…'];
+  let step=0;
+  const go=()=>{
+    if(step>=steps.length){
+      showToast('Manuscript generated! Go to Editor tab.');
+      pb.style.display='none';
+      setTimeout(()=>switchTab('editor'),1200);
+      return;
+    }
+    pf.style.width=steps[step]+'%';
+    showToast(msgs[step]);
+    step++;
+    setTimeout(go, 700);
+  };
+  go();
+}
+
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
+
+function addReference(){
+  const title=document.getElementById('m-title').value.trim();
+  if(!title){showToast('Please enter a title');return;}
+  refs.push({
+    num:refs.length+1,
+    title,
+    authors:document.getElementById('m-authors').value||'Unknown',
+    journal:document.getElementById('m-journal').value||'',
+    year:document.getElementById('m-year').value||'',
+    doi:'',flagged:false,note:'',used:false
+  });
+  closeModal('add-modal');
+  renderRefList();
+  updateStats();
+  showToast('Reference added to library!');
+  ['m-title','m-authors','m-journal','m-year','m-pages','doi-input'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+
+async function doiLookup(){
+  const doi=document.getElementById('doi-input').value.trim();
+  if(!doi){showToast('Enter a DOI first');return;}
+  showToast('Looking up DOI…');
+  try{
+    const res=await fetch('https://api.crossref.org/works/'+encodeURIComponent(doi));
+    const data=await res.json();
+    const m=data.message;
+    document.getElementById('m-title').value=(m.title&&m.title[0])||'';
+    document.getElementById('m-authors').value=m.author?m.author.slice(0,3).map(a=>(a.family||'')+(a.given?' '+a.given[0]+'.':'')).join(', '):'';
+    document.getElementById('m-journal').value=(m['container-title']&&m['container-title'][0])||'';
+    document.getElementById('m-year').value=(m.issued&&m.issued['date-parts']&&m.issued['date-parts'][0][0])||'';
+    showToast('DOI data filled — review and add');
+  } catch(e){ showToast('DOI lookup failed — enter manually'); }
+}
+
+function exportXML(){
+  const xml=`<?xml version="1.0" encoding="UTF-8"?>\n<references>\n`+
+    refs.map(r=>`  <reference id="${r.num}">\n    <title>${r.title}</title>\n    <authors>${r.authors}</authors>\n    <journal>${r.journal}</journal>\n    <year>${r.year}</year>\n    <doi>${r.doi}</doi>\n    <flagged>${r.flagged}</flagged>\n  </reference>`).join('\n')+
+    `\n</references>`;
+  const blob=new Blob([xml],{type:'application/xml'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='grantura-references.xml';
+  a.click();
+  showToast('Reference list exported as XML!');
+}
+
+function handleImport(input){
+  if(input.files[0]) showToast('Parsing '+input.files[0].name+'…');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+renderRefList();
+updateStats();
+</script>
+</body>
+</html>
+<script>
+// ── Grantura Write Sidebar — Extension Bridge ──
+// This block replaces the static demo refs array with real browser.storage data.
+// It runs AFTER the main script so it can safely override renderRefList etc.
+
+(async function bridgeInit() {
+  // Load real refs from storage
+  async function loadRefs() {
+    try {
+      const stored = await browser.runtime.sendMessage({ type: "GET_REFS" });
+      if (stored && stored.length) {
+        refs.length = 0;
+        stored.forEach(r => refs.push(r));
+        renderRefList();
+        updateStats();
+        renderRefDoc();
+      }
+    } catch(e) { /* running as standalone HTML — demo data stays */ }
+  }
+
+  // Listen for updates from background (new capture via popup)
+  try {
+    browser.runtime.onMessage.addListener((msg) => {
+      if (msg.type === "REFS_UPDATED") loadRefs();
+    });
+  } catch(e) {}
+
+  // Override addReference to also persist to storage
+  const _origAdd = window.addReference;
+  window.addReference = async function() {
+    _origAdd && _origAdd();
+    try {
+      const last = refs[refs.length - 1];
+      if (last) await browser.runtime.sendMessage({ type: "CAPTURE_REF", data: last });
+    } catch(e) {}
+  };
+
+  // Override removeRef to also delete from storage
+  const _origRemove = window.removeRef;
+  window.removeRef = async function(i) {
+    const id = refs[i]?.id;
+    _origRemove && _origRemove(i);
+    if (id) {
+      try { await browser.runtime.sendMessage({ type: "DELETE_REF", id }); }
+      catch(e) {}
+    }
+  };
+
+  // Override toggleFlag to persist
+  const _origFlag = window.toggleFlag;
+  window.toggleFlag = async function(i) {
+    _origFlag && _origFlag(i);
+    const r = refs[i];
+    if (r?.id) {
+      try { await browser.runtime.sendMessage({ type: "UPDATE_REF", id: r.id, data: { flagged: r.flagged, note: r.note } }); }
+      catch(e) {}
+    }
+  };
+
+  // Override exportXML — same function works fine, no change needed
+  await loadRefs();
+})();
+</script>
