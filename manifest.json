@@ -2,9 +2,8 @@
   "manifest_version": 2,
   "name": "Grantura Write",
   "version": "1.0.0",
-  "description": "Privacy-first reference manager and AI manuscript generator for researchers. Capture references from any journal, build your library, and generate grounded manuscripts.",
+  "description": "Privacy-first reference manager and AI manuscript generator for researchers.",
   "author": "Grantura",
-  "homepage_url": "https://github.com/YOUR_USERNAME/grantura-write",
 
   "icons": {
     "48":  "icons/icon-48.png",
@@ -15,11 +14,8 @@
   "permissions": [
     "activeTab",
     "storage",
-    "sidebarAction",
-    "https://api.crossref.org/*",
-    "https://pubmed.ncbi.nlm.nih.gov/*",
-    "https://scholar.google.com/*",
-    "https://doi.org/*"
+    "notifications",
+    "https://api.crossref.org/*"
   ],
 
   "background": {
@@ -47,30 +43,7 @@
 
   "content_scripts": [
     {
-      "matches": [
-        "*://*.pubmed.ncbi.nlm.nih.gov/*",
-        "*://*.scholar.google.com/*",
-        "*://*.doi.org/*",
-        "*://*.researchgate.net/*",
-        "*://*.academia.edu/*",
-        "*://*.sciencedirect.com/*",
-        "*://*.springer.com/*",
-        "*://*.wiley.com/*",
-        "*://*.tandfonline.com/*",
-        "*://*.nature.com/*",
-        "*://*.bmj.com/*",
-        "*://*.thelancet.com/*",
-        "*://*.jamanetwork.com/*",
-        "*://*.nejm.org/*",
-        "*://*.arxiv.org/*",
-        "*://*.biorxiv.org/*",
-        "*://*.medrxiv.org/*",
-        "*://*.cochranelibrary.com/*",
-        "*://*.jstor.org/*",
-        "*://*.acm.org/*",
-        "*://*.ieee.org/*",
-        "*://*/*"
-      ],
+      "matches": ["<all_urls>"],
       "js": ["background/content.js"],
       "run_at": "document_idle"
     }
