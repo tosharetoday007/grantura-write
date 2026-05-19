@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to GKS Write</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal:    #0d9488;
+  --teal-d:  #0f766e;
+  --teal-l:  #f0fdfa;
+  --amber:   #f59e0b;
+  --text:    #0f172a;
+  --muted:   #64748b;
+  --border:  #e2e8f0;
+  --bg:      #f8fafc;
+  --white:   #ffffff;
+  --step-inactive: #cbd5e1;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
+  color: white;
+  text-align: center;
+  padding: 64px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.6;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 5px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.hero h1 {
+  font-family: 'Lora', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: #a7f3d0;
+}
+
+.hero p {
+  font-size: 18px;
+  font-weight: 300;
+  opacity: 0.9;
+  max-width: 560px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+  position: relative;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: var(--teal-d);
+  font-weight: 600;
+  font-size: 16px;
+  padding: 14px 32px;
+  border-radius: 50px;
+  text-decoration: none;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+
+.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.hero-free {
+  display: block;
+  margin-top: 16px;
+  font-size: 13px;
+  opacity: 0.75;
+  position: relative;
+}
+
+/* ── SETUP STEPS ── */
+.setup {
+  max-width: 800px;
+  margin: -40px auto 0;
+  padding: 0 24px 60px;
+  position: relative;
+  z-index: 10;
+}
+
+.setup-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+  padding: 40px;
+}
+
+.setup-title {
+  font-family: 'Lora', serif;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.setup-subtitle {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 36px;
+}
+
+.steps { display: flex; flex-direction: column; gap: 0; }
+
+.step {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  animation: fadeUp 0.4s ease both;
+}
+
+.step:last-child { border-bottom: none; }
+.step:nth-child(1) { animation-delay: 0.05s; }
+.step:nth-child(2) { animation-delay: 0.1s; }
+.step:nth-child(3) { animation-delay: 0.15s; }
+.step:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-num {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: var(--teal);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.step-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--text);
+}
+
+.step-body p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.step-body a {
+  color: var(--teal);
+  font-weight: 500;
+  text-decoration: none;
+}
+.step-body a:hover { text-decoration: underline; }
+
+.api-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.api-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--teal-l);
+  border: 1px solid #99f6e4;
+  color: var(--teal-d);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.api-link:hover { background: #ccfbf1; }
+
+/* ── FEATURES GRID ── */
+.features-section {
+  background: white;
+  padding: 64px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.features-inner { max-width: 900px; margin: 0 auto; }
+
+.section-label {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-family: 'Lora', serif;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 48px;
+  color: var(--text);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.feature-card:hover { border-color: var(--teal); transform: translateY(-2px); }
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.feature-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.feature-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── PRO BANNER ── */
+.pro-banner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
+
+.pro-card {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-radius: 16px;
+  padding: 40px;
+  color: white;
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pro-card-text h2 {
+  font-family: 'Lora', serif;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.pro-card-text p {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.7;
+}
+
+.pro-badge {
+  display: inline-block;
+  background: var(--amber);
+  color: #1c1917;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.pro-features {
+  list-style: none;
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pro-features li {
+  font-size: 13px;
+  color: #a7f3d0;
+  background: rgba(255,255,255,0.07);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ── PRIVACY ── */
+.privacy-section {
+  background: var(--teal-l);
+  border-top: 1px solid #99f6e4;
+  border-bottom: 1px solid #99f6e4;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.privacy-section h3 {
+  font-family: 'Lora', serif;
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--teal-d);
+}
+.privacy-section p { font-size: 14px; color: var(--muted); max-width: 560px; margin: 0 auto; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--text);
+  color: #94a3b8;
+  text-align: center;
+  padding: 32px 24px;
+  font-size: 13px;
+}
+footer a { color: #5eead4; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🎉 Welcome · Free</div>
+  <h1>Your AI writing assistant<br>for <em>academic research</em></h1>
+  <p>Save references, manage your library, and write better manuscripts — all inside Firefox, all private.</p>
+  <a href="#setup" class="hero-cta">
+    ⚡ Get started in 3 minutes
+  </a>
+  <span class="hero-free">100% free · No account needed · Your data stays on your device</span>
+</section>
+
+<!-- SETUP STEPS -->
+<section class="setup" id="setup">
+  <div class="setup-card">
+    <h2 class="setup-title">Set up GKS Write</h2>
+    <p class="setup-subtitle">Follow these steps and you'll be writing in minutes</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Get a free AI API key</h3>
+          <p>GKS Write uses your own AI key — you connect directly to the AI provider, your content never passes through our servers. All three options below offer a free tier to get started.</p>
+          <div class="api-links">
+            <a class="api-link" href="https://console.anthropic.com/" target="_blank">🤖 Anthropic Claude</a>
+            <a class="api-link" href="https://aistudio.google.com/app/apikey" target="_blank">✨ Google Gemini</a>
+            <a class="api-link" href="https://console.groq.com/keys" target="_blank">⚡ Groq (fastest)</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Open GKS Write sidebar</h3>
+          <p>Click the <strong>GKS Write icon</strong> in your Firefox toolbar to open the sidebar. Then go to the <strong>Settings tab</strong> (⚙️), paste your API key, choose your AI provider, and click Save.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Save your first reference</h3>
+          <p>Go to any paper on <a href="https://pubmed.ncbi.nlm.nih.gov" target="_blank">PubMed</a>, <a href="https://europepmc.org" target="_blank">Europe PMC</a>, or any journal website. Click the <strong>GKS Write toolbar button</strong> — your reference will be captured automatically with all fields filled in. Click <strong>Save</strong>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Start writing your manuscript</h3>
+          <p>Open the sidebar and go to the <strong>Write tab</strong>. Choose a section (Introduction, Methods, Results, etc.), describe what you want, and click <strong>Generate</strong>. GKS Write will write the section and automatically insert citations from your library.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="features-inner">
+    <p class="section-label">What you can do</p>
+    <h2 class="section-title">Everything in one place</h2>
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <span class="feature-icon">📎</span>
+        <h3>One-click reference saving</h3>
+        <p>Save papers from PubMed, Europe PMC, ScienceDirect, Nature, Wiley, and thousands more. Authors automatically abbreviated in Vancouver format.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">🔍</span>
+        <h3>DOI lookup</h3>
+        <p>Paste any DOI and all fields fill automatically — title, authors, journal, volume, issue, pages, and PMID. No typing required.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">✍️</span>
+        <h3>AI manuscript writing</h3>
+        <p>Generate full manuscript sections with AI. Select text anywhere and rewrite, shorten, or improve it with one click.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">📋</span>
+        <h3>Multiple citation styles</h3>
+        <p>Format your reference list in Vancouver, APA, Harvard, or MLA at any time with a single click.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">🕑</span>
+        <h3>Version history</h3>
+        <p>Every AI edit is snapshotted automatically. Made a mistake? Restore any previous version instantly.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">🔒</span>
+        <h3>Fully private</h3>
+        <p>All your data is stored locally on your device. No account, no cloud, no tracking. Uninstall and everything is gone.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PRO COMING SOON -->
+<div class="pro-banner">
+  <div class="pro-card">
+    <div class="pro-card-text">
+      <span class="pro-badge">⭐ Coming Soon</span>
+      <h2>GKS Write Pro</h2>
+      <p>The current version is completely free. A Pro upgrade is coming with advanced features for power users and research teams.</p>
+      <ul class="pro-features">
+        <li>Multiple projects</li>
+        <li>Advanced templates</li>
+        <li>Team collaboration</li>
+        <li>Journal-specific formatting</li>
+        <li>Plagiarism check integration</li>
+        <li>Priority support</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY NOTE -->
+<div class="privacy-section">
+  <h3>🔒 Your privacy is guaranteed</h3>
+  <p>GKS Write never collects your manuscripts, references, or API key. Everything is stored locally in your browser. Your AI key connects directly to your chosen provider — we are never in the middle.</p>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>GKS Write · Free Academic Writing Assistant for Firefox</p>
+  <p style="margin-top:8px;">
+    <a href="privacy-policy.html">Privacy Policy</a> &nbsp;·&nbsp;
+    <a href="https://addons.mozilla.org" target="_blank">Firefox Add-ons</a>
+  </p>
+</footer>
+
+</body>
+</html>
